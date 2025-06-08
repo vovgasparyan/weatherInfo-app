@@ -1,15 +1,59 @@
 import winston from "winston";
+import fs from "fs";
+import path from "path";
+
+const apiLogPath = path.join('logs', 'bot.log');
+
+class ReverseFileTransport extends winston.transports.File {
+    log(info: any, callback: any) {
+        setImmediate(() => this.emit('logged', info));
+
+        const logMessage = `${info[Symbol.for('message')]}\n`;
+
+        fs.readFile(apiLogPath, 'utf8', (err, data) => {
+            if (err && err.code !== 'ENOENT') return callback(err);
+
+            const newLog = logMessage + (data || '');
+
+            fs.writeFile(apiLogPath, newLog, callback);
+        });
+    }
+}
+
+// Console format that colorizes only the level
+const consoleFormat = winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.colorize({ all: false, level: true }),
+    winston.format.printf(({ level, message, timestamp, ...meta }) => {
+        const metaStr = Object.entries(meta)
+            .filter(([key]) => key !== 'level')
+            .map(([key, value]) => `${key}=${value}`)
+            .join(' ');
+        return `${timestamp} | ${level.padEnd(7)} | ${message} ${metaStr}`;
+    })
+);
+
+// File format without colors
+const fileFormat = winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.printf(({ level, message, timestamp, ...meta }) => {
+        const metaStr = Object.entries(meta)
+            .map(([key, value]) => `${key}=${value}`)
+            .join(' ');
+        return `${timestamp} | ${level.toUpperCase().padEnd(7)} | ${message} ${metaStr}`;
+    })
+);
 
 export const logger = winston.createLogger({
-    level: 'info',
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.printf(
-            ({ timestamp, level, message }) => `${timestamp} [${level}]: ${message}`
-        )
-    ),
+    level: process.env.LOG_LEVEL || 'info',
+    format: fileFormat,
+
     transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({ filename: 'logs/bot.log' })
+        new winston.transports.Console({
+            format: consoleFormat
+        }),
+        new ReverseFileTransport({
+            filename: apiLogPath
+        })
     ]
 });
