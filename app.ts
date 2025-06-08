@@ -8,13 +8,13 @@ dotenv.config();
 const bot = new Telegraf(process.env.BOT_TOKEN!);
 
 bot.start((ctx) => {
-    logger.info(`Пользователь ${ctx.from?.username} запустил бота`);
-    ctx.reply('Привет! Введи название города, чтобы узнать прогноз погоды.');
+  logger.info(`Пользователь ${ctx.from?.username} запустил бота`);
+  ctx.reply('Привет! Введи название города, чтобы узнать прогноз погоды.');
 });
 
 bot.hears(/.*/, async (ctx) => {
   const city = ctx.message.text.trim();
-  logger.info(`Получен запрос погоды для города: ${city}`);
+  logger.info(`Получен запрос погоды для города: ${city} от пользователя ${ctx.from?.username}`);
   const forecast = await getWeatherForecast(city);
   await ctx.reply(forecast, { parse_mode: 'HTML' });
 });
