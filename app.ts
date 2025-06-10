@@ -8,17 +8,17 @@ dotenv.config();
 const bot = new Telegraf(process.env.BOT_TOKEN!);
 
 bot.start((ctx) => {
-  logger.info(`Пользователь ${ctx.from?.username} запустил бота`);
-  ctx.reply('Привет! Введи название города, чтобы узнать прогноз погоды.');
+  logger.info(`User ${ctx.from?.username} started the bot`);
+  ctx.reply('Hello! Enter the name of a city to get the weather forecast.');
 });
 
 bot.hears(/.*/, async (ctx) => {
   const city = ctx.message.text.trim();
-  logger.info(`Получен запрос погоды для города: ${city} от пользователя ${ctx.from?.username}`);
+  logger.info(`Weather request received for the city: ${city} from user ${ctx.from?.username}`);
   const forecast = await getWeatherForecast(city);
-  await ctx.reply(forecast, { parse_mode: 'HTML' });
+  await ctx.reply(forecast, { parse_mode: 'Markdown' });
 });
 
-bot.launch().then(() => logger.info('Бот запущен'));
+bot.launch().then(() => logger.info('Bot started'));
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
