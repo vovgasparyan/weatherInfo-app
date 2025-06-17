@@ -20,7 +20,6 @@ class ReverseFileTransport extends winston.transports.File {
     }
 }
 
-// Console format that colorizes only the level
 const consoleFormat = winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.colorize({ all: false, level: true }),
@@ -33,7 +32,6 @@ const consoleFormat = winston.format.combine(
     })
 );
 
-// File format without colors
 const fileFormat = winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.printf(({ level, message, timestamp, ...meta }) => {
