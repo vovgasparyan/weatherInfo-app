@@ -1,7 +1,7 @@
-import { Telegraf } from "telegraf";
+import { Telegraf } from 'telegraf';
 import dotenv from 'dotenv';
-import { getWeatherForecast } from "./src/weather";
-import { logger } from "./src/logger";
+import { getWeatherForecast } from './src/weather';
+import { logger } from './src/logger';
 
 dotenv.config();
 
