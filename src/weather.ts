@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from 'axios';
 import dotenv from 'dotenv';
-import { logger } from "./logger";
+import { logger } from './logger';
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ export function escapeMarkdown(text: string): string {
     return text.replace(/([_*\[\]()~`>#+\-=|{}.!\\])/g, '\\$1');
 }
 
-function getWeatherEmoji(condition: string): string {
+function getWeather(condition: string): string {
     const text = condition.toLowerCase();
     if (text.includes('sun') || text.includes('солнечно')) return '☀️';
     if (text.includes('partly') || text.includes('переменная')) return '⛅';
@@ -50,7 +50,7 @@ export async function getWeatherForecast(city: string): Promise<string> {
             }));
 
             const conditionText = escapeMarkdown(day.day.condition.text);
-            const icon = getWeatherEmoji(conditionText);
+            const icon = getWeather(conditionText);
             const avgTemp = day.day.avgtemp_c;
             const maxTemp = day.day.maxtemp_c;
             const minTemp = day.day.mintemp_c;
