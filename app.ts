@@ -14,7 +14,7 @@ bot.start((ctx) => {
 
 bot.hears(/.*/, async (ctx) => {
   const city = ctx.message.text.trim();
-  logger.info(`Weather request received for the city: ${city} from user ${ctx.from?.username}`);
+  logger.info(`Request received for the ${city} from ${ctx.from?.username}, name and surname - ${ctx.from?.first_name} ${ctx.from?.last_name}, id: ${ctx.from?.id}`);
   const forecast = await getWeatherForecast(city);
   await ctx.reply(forecast, { parse_mode: 'Markdown' });
 });
