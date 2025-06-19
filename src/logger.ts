@@ -52,6 +52,11 @@ export const logger = winston.createLogger({
         }),
         new ReverseFileTransport({
             filename: apiLogPath
+        }),
+        new winston.transports.File({
+            filename: path.join('logs', 'error.log'),
+            level: 'error',
+            format: fileFormat
         })
     ]
 });
