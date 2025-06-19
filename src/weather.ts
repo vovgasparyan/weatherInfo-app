@@ -24,7 +24,7 @@ function getWeather(condition: string): string {
 }
 
 export async function getWeatherForecast(city: string): Promise<string> {
-    const validCityRegex = /^[a-zA-Zа-яА-ЯёЁ\s]+$/;
+    const validCityRegex = /^[a-zA-Zа-яА-ЯёЁ\s\-]+$/;
 
     if (!validCityRegex.test(city)) {
         logger.error(`Invalid characters in city name: ${city}`);
