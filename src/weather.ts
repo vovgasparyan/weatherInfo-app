@@ -24,11 +24,18 @@ function getWeather(condition: string): string {
 }
 
 export async function getWeatherForecast(city: string): Promise<string> {
+    const validCityRegex = /^[a-zA-Zа-яА-ЯёЁ\s]+$/;
+
+    if (!validCityRegex.test(city)) {
+        logger.error(`Invalid characters in city name: ${city}`);
+        return `🚫 Invalid city name. Please enter only letters and spaces.`;
+    }
+
     try {
         const response = await axios.get(BASE_URL, {
             params: {
                 key: API_KEY,
-                q: city,
+                q: escapeMarkdown(city),
                 days: 4,
                 lang: 'en',
                 aqi: 'no',
@@ -39,8 +46,9 @@ export async function getWeatherForecast(city: string): Promise<string> {
         const data = response.data;
         const location = data.location.name;
         const forecastDays = data.forecast.forecastday;
+        const numberOfDays = forecastDays.length;
 
-        let result = `📍 *${location}* — 4-day forecast:\n\n`;
+        let result = `📍 *${location}* — ${numberOfDays}-day forecast:\n\n`;
 
         for (const day of forecastDays) {
             const date = escapeMarkdown(new Date(day.date).toLocaleDateString('en-EN', {
@@ -61,7 +69,7 @@ export async function getWeatherForecast(city: string): Promise<string> {
         return result.trim();
     } catch (error: any) {
         const errMsg = error.response?.data?.error?.message || error.message;
-        logger.error(`WeatherAPI error: ${errMsg}`);
+        logger.error(`Error from WeatherAPI: ${errMsg}`);
         return `🚫 City not found. Please make sure the name is entered correctly.`;
     }
 }
