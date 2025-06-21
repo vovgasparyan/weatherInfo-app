@@ -35,7 +35,7 @@ export async function getWeatherForecast(city: string): Promise<string> {
         const response = await axios.get(BASE_URL, {
             params: {
                 key: API_KEY,
-                q: escapeMarkdown(city),
+                q: city,
                 days: 4,
                 lang: 'en',
                 aqi: 'no',
