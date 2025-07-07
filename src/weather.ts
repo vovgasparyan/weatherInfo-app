@@ -13,13 +13,78 @@ export function escapeMarkdown(text: string): string {
 
 function getWeather(condition: string): string {
     const text = condition.toLowerCase();
-    if (text.includes('sun') || text.includes('солнечно')) return '☀️';
-    if (text.includes('partly') || text.includes('переменная')) return '⛅';
-    if (text.includes('cloud') || text.includes('облачно')) return '☁️';
-    if (text.includes('rain') || text.includes('дожд')) return '🌧️';
-    if (text.includes('snow') || text.includes('снег')) return '❄️';
-    if (text.includes('thunder')) return '⛈️';
-    if (text.includes('fog') || text.includes('туман')) return '🌫️';
+
+    if (
+        text.includes('sun') ||
+        text.includes('солнечно') ||
+        text.includes('сонячно') ||
+        text.includes('soleado') ||
+        text.includes('ensoleillé') ||
+        text.includes('soleggiato') ||
+        text.includes('sonnig') ||
+        text.includes('ensolarado')
+    ) return '☀️';
+
+    if (
+        text.includes('partly') ||
+        text.includes('переменная') ||
+        text.includes('частково') ||
+        text.includes('parcialmente') ||
+        text.includes('partiellement') ||
+        text.includes('parzialmente') ||
+        text.includes('teilweise')
+    ) return '⛅';
+
+    if (
+        text.includes('cloud') ||
+        text.includes('облачно') ||
+        text.includes('хмарно') ||
+        text.includes('nublado') ||
+        text.includes('nuageux') ||
+        text.includes('nuvoloso') ||
+        text.includes('wolkig')
+    ) return '☁️';
+
+    if (
+        text.includes('rain') ||
+        text.includes('дожд') ||
+        text.includes('дощ') ||
+        text.includes('lluvia') ||
+        text.includes('pluie') ||
+        text.includes('pioggia') ||
+        text.includes('regen')
+    ) return '🌧️';
+
+    if (
+        text.includes('snow') ||
+        text.includes('снег') ||
+        text.includes('сніг') ||
+        text.includes('nieve') ||
+        text.includes('neige') ||
+        text.includes('neve') ||
+        text.includes('schnee')
+    ) return '❄️';
+
+    if (
+        text.includes('thunder') ||
+        text.includes('гроза') ||
+        text.includes('буря') ||
+        text.includes('tormenta') ||
+        text.includes('orage') ||
+        text.includes('temporale') ||
+        text.includes('gewitter')
+    ) return '⛈️';
+
+    if (
+        text.includes('fog') ||
+        text.includes('туман') ||
+        text.includes('імла') ||
+        text.includes('niebla') ||
+        text.includes('brouillard') ||
+        text.includes('nebbia') ||
+        text.includes('nebel')
+    ) return '🌫️';
+
     return '🌡️';
 }
 
@@ -106,11 +171,22 @@ export async function getWeatherForecast(city: string, lang: string = 'en'): Pro
                 key: API_KEY,
                 q: city,
                 days: 4,
-                lang: 'en',
+                lang,
                 aqi: 'no',
                 alerts: 'no'
             }
         });
+
+        const localeMap: Record<string, string> = {
+            en: 'en-US',
+            ru: 'ru-RU',
+            uk: 'uk-UA',
+            es: 'es-ES',
+            de: 'de-DE',
+            it: 'it-IT',
+            fr: 'fr-FR',
+            pt: 'pt-PT',
+        };
 
         const data = response.data;
         const location = data.location.name;
@@ -118,10 +194,15 @@ export async function getWeatherForecast(city: string, lang: string = 'en'): Pro
         let result = t.forecast(location, forecastDays.length);
 
         for (const day of forecastDays) {
-            const date = escapeMarkdown(new Date(day.date).toLocaleDateString(
-                lang === 'ru' || lang === 'uk' ? 'ru-RU' : 'en-US',
-                { weekday: 'long', day: 'numeric', month: 'long' }
-            ));
+            const locale = localeMap[lang] || 'en-US';
+
+            const date = escapeMarkdown(
+                new Date(day.date).toLocaleDateString(locale, {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long'
+                })
+            );
 
             const conditionText = escapeMarkdown(day.day.condition.text);
             const icon = getWeather(conditionText);
